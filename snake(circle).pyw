@@ -22,8 +22,8 @@ class Snake:
         self.i = randint(0, (len(self.Fcolors)-1))
         
         '''Snake Classic'''
-        self.gScolor = "green"        
-        self.Scolor = "black" #cor da cobra "green"
+        self.Sheadcolor = "dark green" #cor da cabeca da cobra "dark green"
+        self.Scolor = "green" #cor da cobra "green"
         self.borderScolor = "green" #cor do contorno da cobra "green"
         self.Fcolor = self.Fcolors[self.i] #cores da comida 
         self.vFcolor = "red" #cor da vitamina "red"
@@ -132,7 +132,7 @@ class Snake:
         self.foodCoords = []
         
         '''Cria um quadrado para ser parte do corpo da cobra'''
-        self.Snakebody = self.canvas.create_oval(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
+        self.Snakebody = self.canvas.create_oval(self.xi, self.yi, self.xf, self.yf, fill = self.Sheadcolor, outline = self.borderScolor)
 
         '''Adiciona o quadrado(parte do corpo) a lista(corpo)'''
         self.SnakeB.append(self.Snakebody)
@@ -418,7 +418,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
 
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 2:
@@ -440,7 +439,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
 
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 3:
@@ -462,7 +460,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
                         
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 4:
@@ -486,7 +483,8 @@ class Snake:
                     else:
                         self.endGame() #chama um metodo que acaba o jogo
 
-            self.canvas.itemconfig(self.SnakeB[-1], fill = self.Scolor) #muda a cor da ponta da cobra para a padrao
+            if len(self.SnakeB) > 1:
+                self.canvas.itemconfig(self.SnakeB[-1], fill = self.Scolor) #muda a cor da ponta da cobra para a padrao
             self.moveCount += 1 #contador de movimentos
 
             '''Impede que a comida apareca dentro da cobra mais de uma vez'''
@@ -507,7 +505,8 @@ class Snake:
                 for k in range(1, len(self.SnakeB)):
                     if self.canvas.coords(self.SnakeB[k]) == self.foodCoords[self.foodPosition]:
                         self.canvas.itemconfig(self.SnakeB[k], fill = self.Fcolors[self.i-1])
-                        self.canvas.itemconfig(self.SnakeB[k-1], fill = self.Scolor)
+                        if (k-1) != 0:
+                            self.canvas.itemconfig(self.SnakeB[k-1], fill = self.Scolor)
                     
             if len(self.SnakeB) >= 3:
                 self.count = 0
