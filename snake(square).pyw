@@ -84,6 +84,7 @@ class Snake:
         self.score = 0
         
         with open('highScore.txt', 'r+') as self.highScore:
+##            self.high_score = self.highScore.read()
             if self.highScore.read() >= "0":
                 pass
             else:
@@ -104,12 +105,25 @@ class Snake:
         '''Cria label para o placar'''
         self.scoreboard = Label(self.frame, borderwidth = 1, relief = "solid", text = " Score Board ", font = ("Calibri", 15, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.scoreboard.pack(side = TOP, fill = BOTH)
+        
         self.lbl_score = Label(self.frame, borderwidth = 1, relief = "solid", text = 0, font = ("Calibri", 25, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_score.pack(side = TOP, fill = BOTH, expand = 1)
+
+        self.highscoreboard = Label(self.frame, borderwidth = 1, relief = "solid", text = " Highscore ", font = ("Calibri", 15, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
+        self.highscoreboard.pack(side = TOP, fill = BOTH)
+
+        with open('highScore.txt', 'r') as self.highScore:
+            self.high_score = self.highScore.read()
+
+        self.lbl_highscore = Label(self.frame, borderwidth = 1, relief = "solid", text = self.high_score, font = ("Calibri", 25, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
+        self.lbl_highscore.pack(side = TOP, fill = BOTH, expand = 1)
+        
         self.lbl_walls = Label(self.frame, borderwidth = 1, relief = "solid", text = "Walls: On", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_walls.pack(side = TOP, fill = BOTH)
+        
         self.lbl_mode = Label(self.frame, borderwidth = 1, relief = "solid", text = "Mode: Hard", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_mode.pack(side = TOP, fill = BOTH)
+        
         self.lbl_speed = Label(self.frame, borderwidth = 1, relief = "solid", text = "Speed: High", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_speed.pack(side = TOP, fill = BOTH)
         '''-------------------------------------------------------'''
@@ -189,21 +203,28 @@ class Snake:
         self.submenu1 = Menu(self.mainmenu, tearoff = 0)
         self.submenu2 = Menu(self.mainmenu, tearoff = 0)
         self.submenu3 = Menu(self.mainmenu, tearoff = 0)
+        self.submenu4 = Menu(self.mainmenu, tearoff = 0)
         self.mainmenu.add_cascade(label = "Options", menu = self.submenu1)
         self.mainmenu.add_cascade(label = "Difficulty", menu = self.submenu2)
         self.mainmenu.add_cascade(label = "Help", menu = self.submenu3)
+        self.mainmenu.add_cascade(label = "About", menu = self.submenu4)
 
         '''Adiciona comandos aos menus secundarios'''
         self.submenu1.add_command(label = 'Restart', command = self.gameRestart)
         self.submenu1.add_command(label = 'Walls', command = self.gameWalls)
         self.submenu1.add_command(label = 'Stop', command = self.gameStop)
         self.submenu1.add_command(label = 'Exit', command = self.gameExit)
+        
         self.submenu2.add_command(label = 'Easy', command = self.gameEasy)
         self.submenu2.add_command(label = 'Medium', command = self.gameMedium)
         self.submenu2.add_command(label = 'Hard', command = self.gameHard)
         self.submenu2.add_command(label = 'Expert', command = self.gameExpert)
-        self.submenu2.add_command(label = 'God', command = self.gameGod)        
+        self.submenu2.add_command(label = 'God', command = self.gameGod)
+        
         self.submenu3.add_command(label = 'Instructions', command = self.gameInstructions)
+        
+        self.submenu4.add_command(label = 'Author', command = self.gameAuthor)
+        
         master.config(menu = self.mainmenu)
         '''-------------------------------------------------------'''
         #############################################################
@@ -315,6 +336,16 @@ class Snake:
         self.msg2.pack(side = TOP, fill = BOTH)
         self.msg3.pack(side = TOP, fill = BOTH)
 
+    def gameAuthor(self):
+        '''Abre uma nova janela'''
+        self.top = Toplevel()
+        self.top["bg"] = self.topbg
+        self.top.title("Author section")
+
+        '''Mensagens da janela'''
+        self.msg4 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = " Game developer: Rodrigo Pita (University Student) \n\n  This game was developed as an assignment for \n programming class Comp II (2017.2)")
+        self.msg4.pack(side = TOP, fill = BOTH)
+    
     '''Acaba o jogo'''
     def endGame(self):
         if self.gameMode == "Hard" or self.gameMode == "Expert":
