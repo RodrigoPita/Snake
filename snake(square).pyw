@@ -22,7 +22,7 @@ class Snake:
         self.i = randint(0, (len(self.Fcolors)-1))
         
         '''Snake Classic'''
-        self.gScolor = "green"        
+        self.Sheadcolor = "dark green" #cor da cabeca da cobra "dark green"
         self.Scolor = "green" #cor da cobra "black"
         self.borderScolor = "black" #cor do contorno da cobra "green"
         self.Fcolor = self.Fcolors[self.i] #cores da comida 
@@ -82,8 +82,7 @@ class Snake:
         
         '''Pontos'''
         self.score = 0
-        self.speedScore1 = 10 #ponto que aumenta a velocidade
-        self.speedScore2 = 20 #ponto que aumenta a velocidade
+        
         with open('highScore.txt', 'r+') as self.highScore:
             if self.highScore.read() >= "0":
                 pass
@@ -132,7 +131,7 @@ class Snake:
         self.foodCoords = []
         
         '''Cria um quadrado para ser parte do corpo da cobra'''
-        self.Snakebody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
+        self.Snakebody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Sheadcolor, outline = self.borderScolor)
 
         '''Adiciona o quadrado(parte do corpo) a lista(corpo)'''
         self.SnakeB.append(self.Snakebody)
@@ -272,8 +271,6 @@ class Snake:
     def gameMedium(self):
         self.v = self.nSpeed #altera o delay no metodo de movimento
         self.gameMode = "Medium"
-        self.speedScore1 = 10 #ponto que aumenta a velocidade
-        self.speedScore2 = 30 #ponto que aumenta a velocidade
         self.lbl_speed["text"] = "Speed: Normal"
         self.lbl_mode["text"] = "Mode: Medium"
         self.walls = False
@@ -282,7 +279,6 @@ class Snake:
     def gameHard(self):
         self.v = self.hSpeed #altera o delay no metodo de movimento
         self.gameMode = "Hard"
-        self.speedScore2 = 20 #ponto que aumenta a velocidade
         self.lbl_speed["text"] = "Speed: High"
         self.lbl_mode["text"] = "Mode: Hard"
         self.walls = True
@@ -419,7 +415,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
 
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 2:
@@ -441,7 +436,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
 
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 3:
@@ -463,7 +457,6 @@ class Snake:
                         self.SnakeBCoords.append(self.canvas.coords(self.Snakebody)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
                         
                     else:
-##                        self.direct = 0 #muda a variavel da direcao para a nula
                         self.endGame() #chama um metodo que acaba o jogo
                         
             if self.direct == 4:
@@ -487,7 +480,8 @@ class Snake:
                     else:
                         self.endGame() #chama um metodo que acaba o jogo
 
-            self.canvas.itemconfig(self.SnakeB[-1], fill = self.Scolor) #muda a cor da ponta da cobra para a padrao
+            if len(self.SnakeB) > 1:
+                self.canvas.itemconfig(self.SnakeB[-1], fill = self.Scolor) #muda a cor da ponta da cobra para a padrao
             self.moveCount += 1 #contador de movimentos
 
             '''Impede que a comida apareca dentro da cobra mais de uma vez'''
@@ -508,7 +502,8 @@ class Snake:
                 for k in range(1, len(self.SnakeB)):
                     if self.canvas.coords(self.SnakeB[k]) == self.foodCoords[self.foodPosition]:
                         self.canvas.itemconfig(self.SnakeB[k], fill = self.Fcolors[self.i-1])
-                        self.canvas.itemconfig(self.SnakeB[k-1], fill = self.Scolor)
+                        if (k-1) != 0:
+                            self.canvas.itemconfig(self.SnakeB[k-1], fill = self.Scolor)
                     
             if len(self.SnakeB) >= 3:
                 self.count = 0
@@ -554,21 +549,6 @@ class Snake:
         '''Aumenta a pontuacao'''
         self.score += 1
         self.lbl_score["text"] += 1
-        
-        '''Quando a pontuacao chegar a um certo numero, a velocidade aumenta'''
-        if self.gameMode == "Medium":                    
-            if self.score == self.speedScore1:
-                if self.v == self.nSpeed:
-                    self.highSpeed() #chama o metodo com a velocidade rapida
-                    
-            elif self.score == self.speedScore2:
-                if self.v == self.hSpeed:
-                    self.ultraSpeed() #chama o metodo com a maior velocidade
-                    
-        elif self.gameMode == "Hard":
-            if self.score == self.speedScore2:
-                if self.v == self.hSpeed:
-                    self.ultraSpeed() #chama o metodo com a maior velocidade
      
         if self.Fcolor == self.Fcolors[self.i]:
             '''Define a lista de cores como limite de mudanca entre as cores da comida'''
