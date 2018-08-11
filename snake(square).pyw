@@ -84,7 +84,6 @@ class Snake:
         self.score = 0
         
         with open('highScore.txt', 'r+') as self.highScore:
-##            self.high_score = self.highScore.read()
             if self.highScore.read() >= "0":
                 pass
             else:
