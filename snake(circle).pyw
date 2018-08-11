@@ -82,8 +82,7 @@ class Snake:
         
         '''Pontos'''
         self.score = 0
-        self.speedScore1 = 10 #ponto que aumenta a velocidade
-        self.speedScore2 = 20 #ponto que aumenta a velocidade
+        
         with open('highScore.txt', 'r+') as self.highScore:
             if self.highScore.read() >= "0":
                 pass
@@ -272,8 +271,6 @@ class Snake:
     def gameMedium(self):
         self.v = self.nSpeed #altera o delay no metodo de movimento
         self.gameMode = "Medium"
-        self.speedScore1 = 10 #ponto que aumenta a velocidade
-        self.speedScore2 = 30 #ponto que aumenta a velocidade
         self.lbl_speed["text"] = "Speed: Normal"
         self.lbl_mode["text"] = "Mode: Medium"
         self.walls = False
@@ -282,7 +279,6 @@ class Snake:
     def gameHard(self):
         self.v = self.hSpeed #altera o delay no metodo de movimento
         self.gameMode = "Hard"
-        self.speedScore2 = 20 #ponto que aumenta a velocidade
         self.lbl_speed["text"] = "Speed: High"
         self.lbl_mode["text"] = "Mode: Hard"
         self.walls = True
@@ -552,22 +548,7 @@ class Snake:
         '''Aumenta a pontuacao'''
         self.score += 1
         self.lbl_score["text"] += 1
-        
-        '''Quando a pontuacao chegar a um certo numero, a velocidade aumenta'''
-        if self.gameMode == "Medium":                    
-            if self.score == self.speedScore1:
-                if self.v == self.nSpeed:
-                    self.highSpeed() #chama o metodo com a velocidade rapida
-                    
-            elif self.score == self.speedScore2:
-                if self.v == self.hSpeed:
-                    self.ultraSpeed() #chama o metodo com a maior velocidade
-                    
-        elif self.gameMode == "Hard":
-            if self.score == self.speedScore2:
-                if self.v == self.hSpeed:
-                    self.ultraSpeed() #chama o metodo com a maior velocidade
-     
+             
         if self.Fcolor == self.Fcolors[self.i]:
             '''Define a lista de cores como limite de mudanca entre as cores da comida'''
             if self.i < (len(self.Fcolors)-1):
