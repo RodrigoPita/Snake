@@ -144,7 +144,7 @@ class Snake:
         self.foodCoords = []
         
         '''Cria um quadrado para ser parte do corpo da cobra'''
-        self.Snakebody = self.canvas.create_oval(self.xi, self.yi, self.xf, self.yf, fill = self.Sheadcolor, outline = self.borderScolor)
+        self.Snakebody = self.canvas.create_oval(self.xi, self.yi, self.xf, self.yf, fill = self.Sheadcolor, outline = self.Sheadcolor)
 
         '''Adiciona o quadrado(parte do corpo) a lista(corpo)'''
         self.SnakeB.append(self.Snakebody)
@@ -413,8 +413,7 @@ class Snake:
                 self.move = 0 #muda a variavel da condicao da troca de direcao
                 
         elif event.keysym == "Up":
-            '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo me
-    def moveSnake(self):todo mais de uma vez'''
+            '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
             if self.direct != 3 and self.direct!= 4 and self.move != 0:
                 '''Move a cobra para cima'''        
                 self.direct = 4 #muda a variavel da direcao para cima
