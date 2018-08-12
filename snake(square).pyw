@@ -48,9 +48,9 @@ class Snake:
         self.frame.pack()
         
         '''Variaveis para determinar o tamanho do canvas'''
-        self.cRow = 50 #linhas
-        self.cCol = 60 #colunas
-        self.cMtp = 10 #multiplicador para o espaco entre linhas ou colunas
+        self.cRow = 50 #linhas 50
+        self.cCol = 60 #colunas 60
+        self.cMtp = 10 #multiplicador para o espaco entre linhas ou colunas 10
         self.cWidth = self.cCol * self.cMtp + 1 #largura do canvas
         self.cHeight = self.cRow * self.cMtp + 1 #altura do canvas
 
@@ -203,6 +203,7 @@ class Snake:
         self.submenu2 = Menu(self.mainmenu, tearoff = 0)
         self.submenu3 = Menu(self.mainmenu, tearoff = 0)
         self.submenu4 = Menu(self.mainmenu, tearoff = 0)
+        
         self.mainmenu.add_cascade(label = "Options", menu = self.submenu1)
         self.mainmenu.add_cascade(label = "Difficulty", menu = self.submenu2)
         self.mainmenu.add_cascade(label = "Help", menu = self.submenu3)
@@ -331,6 +332,7 @@ class Snake:
         self.msg1 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "Use the arrow keys to change directions")
         self.msg2 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "If it shows'Walls: On',\n the snake will die by hitting them,\n in order to change the walls dynamics,\n click on 'Options', then on 'Walls'")
         self.msg3 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "If you want, you can also change the snake's speed\n by clicking on 'Speed' and choosing a different one")
+
         self.msg1.pack(side = TOP, fill = BOTH)
         self.msg2.pack(side = TOP, fill = BOTH)
         self.msg3.pack(side = TOP, fill = BOTH)
@@ -372,12 +374,16 @@ class Snake:
         '''Cria os labels e buttons para a janela'''
         self.lbl_gameover = Label(self.top_restart, bg = self.topbg, font = ("Calibri", 12), text = "Do you want to play again?")
         self.lbl_gameover.pack(side = TOP, fill = BOTH, expand = 1)
+        
         self.lbl1_blank = Label(self.top_restart, bg = self.topbg, height = 3)
         self.lbl1_blank.pack(side = LEFT)
+        
         self.lbl2_blank = Label(self.top_restart, bg = self.topbg, width = 5)
         self.lbl2_blank.pack(side = LEFT)
+        
         self.btn_restart = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "Yes", command = self.gameRestart)
         self.btn_restart.pack(side = LEFT)
+        
         self.btn_exit = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "No", command = self.gameExit)
         self.btn_exit.pack(side = LEFT)
 
@@ -413,8 +419,7 @@ class Snake:
                 self.move = 0 #muda a variavel da condicao da troca de direcao
                 
         elif event.keysym == "Up":
-            '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo me
-    def moveSnake(self):todo mais de uma vez'''
+            '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
             if self.direct != 3 and self.direct!= 4 and self.move != 0:
                 '''Move a cobra para cima'''        
                 self.direct = 4 #muda a variavel da direcao para cima
@@ -566,7 +571,7 @@ class Snake:
             
             if [float(self.x1), float(self.y1), float(self.x1+self.dif), float(self.y1+self.dif)] not in self.SnakeBCoords:
                 '''Cria a comida'''                
-                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor)
+                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor, outline = self.borderScolor)
                 self.foodCoords.append(self.canvas.coords(self.food))
 
     '''Aumenta a cobra'''
@@ -579,6 +584,9 @@ class Snake:
         '''Aumenta a pontuacao'''
         self.score += 1
         self.lbl_score["text"] += 1
+
+        if self.score >= self.high_score:
+            self.high_score = self.score
      
         if self.Fcolor == self.Fcolors[self.i]:
             '''Define a lista de cores como limite de mudanca entre as cores da comida'''
