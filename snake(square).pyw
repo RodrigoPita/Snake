@@ -16,27 +16,27 @@ class Snake:
         #############################################################
         '''--------------------- C O R E S -----------------------'''
         '''Lista com as cores da comida'''
-        self.Fcolors = ["yellow", "magenta2", "blue", "red"]
+        self.Fcolors = ["#FFFF00", "#FF00FF", "#0000FF", "#FF0000"] # ["yellow", "magenta2", "blue", "red"]
 
         '''Variavel para mudar a cor da lista'''
         self.i = randint(0, (len(self.Fcolors)-1))
         
         '''Snake Classic'''
-        self.Sheadcolor = "dark green" #cor da cabeca da cobra "dark green"
-        self.Scolor = "green" #cor da cobra "black"
-        self.borderScolor = "black" #cor do contorno da cobra "green"
+        self.Sheadcolor = "#175A07" #cor da cabeca da cobra "dark green"
+        self.Scolor = "#00FF00" #cor da cobra "black"
+        self.borderScolor = "#000000" #cor do contorno da cobra "black"
         self.Fcolor = self.Fcolors[self.i] #cores da comida 
-        self.vFcolor = "red" #cor da vitamina "red"
-        self.BGcolor = "black" #cor de fundo 
-        self.lbl1color = "dark green" #cor de fundo do label do nome do jogo "dark green"
-        self.lbl2color = "pale green" #cor de fundo dos labels "pale green"
-        self.Titlefontcolor = "green" #cor do titulo "green"
-        self.fontcolor = "dark green" #cor do texto "dark green"
-        self.topbg = "seashell2" #cor das janelas extra "seashell2"
+        self.vFcolor = "#FF0000" #cor da vitamina "red"
+        self.BGcolor = "#000000" #cor de fundo 
+        self.lbl1color = "#175A07" #cor de fundo do label do nome do jogo "dark green"
+        self.lbl2color = "#AAF9A3" #cor de fundo dos labels "pale green"
+        self.Titlefontcolor = "#00FF00" #cor do titulo "green"
+        self.fontcolor = "#175A07" #cor do texto "dark green"
+        self.topbg = "#E0E0D6" #cor das janelas extra "seashell2"
 
         '''Define a cor do master'''
         self.master = master
-        self.master["bg"] = "midnight blue" #"midnight blue"
+        self.master["bg"] = "#041C65" #"midnight blue"
         '''-------------------------------------------------------'''
         #############################################################
         
@@ -44,7 +44,7 @@ class Snake:
         '''-------------------- C A N V A S ----------------------'''
         '''Cria o frame para o canvas'''
         self.frame = Frame(master, borderwidth = 10, relief = "ridge")
-        self.frame["bg"] = "black"
+        self.frame["bg"] = "#000000"
         self.frame.pack()
         
         '''Variaveis para determinar o tamanho do canvas'''
