@@ -3,6 +3,7 @@ from tkMessageBox import*
 import time
 from random import randint, shuffle
 import sys
+import os
 
 '''Aumenta o limite de recursao'''
 sys.setrecursionlimit(1000000)
@@ -83,10 +84,14 @@ class Snake:
         '''Pontos'''
         self.score = 0
         
-        with open('highScore.txt', 'r+') as self.highScore:
-            if self.highScore.read() >= "0":
-                pass
-            else:
+        if os.path.exists('highScore.txt'):
+            with open('highScore.txt', 'r+') as self.highScore:
+                if self.highScore.read() >= "0":
+                    pass
+                else:
+                    self.highScore.write("0")
+        else:
+            with open('highScore.txt', 'w') as self.highScore:
                 self.highScore.write("0")
         #############################################################
         '''-------------------- L A B E L S ----------------------'''
