@@ -5,10 +5,17 @@ from random import randint, shuffle
 import sys
 
 '''Aumenta o limite de recursao'''
-sys.setrecursionlimit(2147483647)
+sys.setrecursionlimit(100)
 
 class Snake:
     def __init__(self, master):
+        '''Variaveis de condicao para o movimento'''
+        self.game = True #True - jogo rodando, False - game over
+        self.move = 1 #
+
+        '''Variavel para mudar a cor da lista'''
+        self.i = 0
+        
         '''Define um tamanho fixo para a janela'''
         master.minsize(width = 534, height = 392)
         master.maxsize(width = 534, height = 392)
@@ -32,13 +39,31 @@ class Snake:
         self.dmove = 19
 
         '''Cores'''
-        self.Scolor = "black" #cor da cobra
-        self.BGcolor = "yellow green" #cor de fundo
-        self.lbl1color = "seashell3" #cor de fundo do label do nome do jogo
-        self.lbl2color = "seashell2" #cor de fundo dos labels
-        self.Fcolor = "yellow" #cor da comida
-        self.fontcolor = self.Scolor #cor do texto
-        self.topbg = self.lbl2color #cor das janelas extra
+        """Lista com as cores da comida"""
+        self.Fcolors = ["yellow", "magenta2", "blue", "red"]
+        
+        """Snake Classic"""
+        self.Scolor = "green" #cor da cobra "green"
+        self.borderScolor = self.Scolor #cor do contorno da cobra "green"
+        self.Fcolor = self.Fcolors[0] #cor da comida "yellow"
+        self.vFcolor = "red" #cor da vitamina "red"
+        self.BGcolor = "black" #cor de fundo 
+        self.lbl1color = "dark green" #cor de fundo do label do nome do jogo "dark green"
+        self.lbl2color = "pale green" #cor de fundo dos labels "pale green"
+        self.Titlefontcolor = self.Scolor #cor do titulo
+        self.fontcolor = "dark green" #cor do texto "dark green"
+        self.topbg = "seashell2" #cor das janelas extra "seashell2"
+        
+##        """Snake Pink"""
+##        self.Scolor = "magenta" #cor da cobra
+##        self.borderScolor = self.Scolor #cor do contorno da cobra
+##        self.Fcolor = "magenta3" #cor da comida
+##        self.BGcolor = "black" #cor de fundo 
+##        self.lbl1color = "magenta3" #cor de fundo do label do nome do jogo 
+##        self.lbl2color = "rosybrown1" #cor de fundo dos labels 
+##        self.Titlefontcolor = self.Scolor #cor do titulo
+##        self.fontcolor = "magenta3" #cor do texto 
+##        self.topbg = "seashell2" #cor das janelas extra
         
         '''Coordenadas do corpo'''
         self.coordx = randint(4, 16)
@@ -54,28 +79,27 @@ class Snake:
         self.xmax = 400
         self.ymax = 305
 
-        
         '''Velocidade do movimento'''
         self.sSpeed = 0.2
-        self.mSpeed = 0.15
+        self.nSpeed = 0.15
         self.hSpeed = 0.1
         self.uSpeed = 0.05
+        self.lSpeed = 0.035
         self.v = self.hSpeed
+
+        '''Dificuldade do jogo'''
+        self.gameMode = "Hard"
         
         '''Pontos'''
         self.score = 0
         self.speedScore1 = 10 #ponto que aumenta a velocidade
         self.speedScore2 = 20 #ponto que aumenta a velocidade
-        self.speedScore3 = 30 #ponto que aumenta a velocidade
         
         '''Direcao de movimento'''
         self.direct = 0 #0 - nula, 1 - direita, 2 - esquerda, 3 - para baixo, 4 - para cima
-        
-        '''Variavel apontando se a cobra comeu a comida'''
-        self.fdif = 0
 
         '''Cria label para o nome dop jogo'''
-        self.lbl_SNAKE = Label(self.frame, relief = "solid", text = "SNAKE GAME", font = ("Calibri", 35, "italic"), bg = self.lbl1color, fg = self.fontcolor)
+        self.lbl_SNAKE = Label(self.frame, relief = "solid", text = "SNAKE GAME", font = ("Calibri", 35, "italic", "bold"), bg = self.lbl1color, fg = self.Titlefontcolor)
         self.lbl_SNAKE.pack(side = TOP, fill = BOTH)
 
         '''Cria o Canvas e cofingura-o'''
@@ -86,13 +110,15 @@ class Snake:
         self.canvas.pack(side = LEFT)
 
         '''Cria label para o placar'''
-        self.scoreboard = Label(self.frame, borderwidth = 1, relief = "solid", text = " Score Board ", font = ("Calibri", 15, "italic"), bg = self.lbl2color, fg = self.fontcolor)
+        self.scoreboard = Label(self.frame, borderwidth = 1, relief = "solid", text = " Score Board ", font = ("Calibri", 15, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.scoreboard.pack(side = TOP, fill = BOTH)
-        self.lbl_score = Label(self.frame, borderwidth = 1, relief = "solid", text = 0, font = ("Calibri", 25, "italic"), bg = self.lbl2color, fg = self.fontcolor)
+        self.lbl_score = Label(self.frame, borderwidth = 1, relief = "solid", text = 0, font = ("Calibri", 25, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_score.pack(side = TOP, fill = BOTH, expand = 1)
-        self.lbl_walls = Label(self.frame, borderwidth = 1, relief = "solid", text = "Walls: On", font = ("Calibri", 10, "italic"), bg = self.lbl2color, fg = self.fontcolor)
+        self.lbl_walls = Label(self.frame, borderwidth = 1, relief = "solid", text = "Walls: On", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_walls.pack(side = TOP, fill = BOTH)
-        self.lbl_speed = Label(self.frame, borderwidth = 1, relief = "solid", text = "Speed: High", font = ("Calibri", 10, "italic"), bg = self.lbl2color, fg = self.fontcolor)
+        self.lbl_mode = Label(self.frame, borderwidth = 1, relief = "solid", text = "Mode: Hard", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
+        self.lbl_mode.pack(side = TOP, fill = BOTH)
+        self.lbl_speed = Label(self.frame, borderwidth = 1, relief = "solid", text = "Speed: High", font = ("Calibri", 10, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.lbl_speed.pack(side = TOP, fill = BOTH)
         
         '''Lista com o corpo da cobra'''
@@ -100,31 +126,31 @@ class Snake:
         self.SnakeBCoords = []
         
         '''Cria um quadrado para ser parte do corpo da cobra'''
-        self.Sbody1 = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+        self.Sbody1 = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
 
         '''Adiciona o quadrado(parte do corpo) a lista(corpo)'''
         self.SnakeB.append(self.Sbody1)
         self.SnakeBCoords.append(self.canvas.coords(self.Sbody1))
 
         '''Associa os movimentos da cobra as teclas'''
-        self.canvas.bind("<Right>", self.moveSnake)
-        self.canvas.bind("<Left>", self.moveSnake)
-        self.canvas.bind("<Down>", self.moveSnake)
-        self.canvas.bind("<Up>", self.moveSnake)
+        self.canvas.bind("<Right>", self.changeDirect)
+        self.canvas.bind("<Left>", self.changeDirect)
+        self.canvas.bind("<Down>", self.changeDirect)
+        self.canvas.bind("<Up>", self.changeDirect)
         self.canvas.focus_set()
 
         '''Chama o metodo de criacao da comida'''
         self.reFood()
-
+        
         '''Define o menu principal'''
         self.mainmenu = Menu(master)
 
         '''Define os menus secundarios'''
-        self.submenu1 = Menu(self.mainmenu)
-        self.submenu2 = Menu(self.mainmenu)
-        self.submenu3 = Menu(self.mainmenu)
+        self.submenu1 = Menu(self.mainmenu, tearoff = 0)
+        self.submenu2 = Menu(self.mainmenu, tearoff = 0)
+        self.submenu3 = Menu(self.mainmenu, tearoff = 0)
         self.mainmenu.add_cascade(label = "Options", menu = self.submenu1)
-        self.mainmenu.add_cascade(label = "Speed", menu = self.submenu2)
+        self.mainmenu.add_cascade(label = "Difficulty", menu = self.submenu2)
         self.mainmenu.add_cascade(label = "Help", menu = self.submenu3)
 
         '''Adiciona comandos aos menus secundarios'''
@@ -132,12 +158,16 @@ class Snake:
         self.submenu1.add_command(label = 'Walls', command = self.gameWalls)
         self.submenu1.add_command(label = 'Stop', command = self.gameStop)
         self.submenu1.add_command(label = 'Exit', command = self.gameExit)
-        self.submenu2.add_command(label = 'Slow', command = self.slowSpeed)
-        self.submenu2.add_command(label = 'Medium', command = self.mediumSpeed)
-        self.submenu2.add_command(label = 'High', command = self.highSpeed)
-        self.submenu2.add_command(label = 'Ultra', command = self.ultraSpeed)
+        self.submenu2.add_command(label = 'Easy', command = self.gameEasy)
+        self.submenu2.add_command(label = 'Medium', command = self.gameMedium)
+        self.submenu2.add_command(label = 'Hard', command = self.gameHard)
+        self.submenu2.add_command(label = 'Expert', command = self.gameExpert)
+        self.submenu2.add_command(label = 'God', command = self.gameGod)        
         self.submenu3.add_command(label = 'Instructions', command = self.gameInstructions)
         master.config(menu = self.mainmenu)
+
+        '''Chama o metodo de movimento da cobra'''
+        self.moveSnake()
 
     '''Reinicia o jogo'''
     def gameRestart(self):
@@ -164,11 +194,6 @@ class Snake:
     def gameExit(self):
         root.destroy()
 
-    '''Altera a velocidade da cobra para a mais devagar'''
-    def slowSpeed(self):
-        self.v = self.sSpeed #altera o delay no metodo de movimento
-        self.lbl_speed["text"] = "Speed: Slow"
-
     '''Altera a velocidade da cobra para a intermediaria'''
     def mediumSpeed(self):
         self.v = self.mSpeed #altera o delay no metodo de movimento
@@ -183,6 +208,49 @@ class Snake:
     def ultraSpeed(self):
         self.v = self.uSpeed #altera o delay no metodo de movimento
         self.lbl_speed["text"] = "Speed: Ultra"
+    
+    def gameEasy(self):
+        self.v = self.sSpeed #altera o delay no metodo de movimento
+        self.gameMode = "Easy"
+        self.lbl_speed["text"] = "Speed: Slow"
+        self.lbl_mode["text"] = "Mode: Easy"
+        self.walls = False
+        self.lbl_walls["text"] = "Walls: Off"
+        
+    def gameMedium(self):
+        self.v = self.nSpeed #altera o delay no metodo de movimento
+        self.gameMode = "Medium"
+        self.speedScore1 = 10 #ponto que aumenta a velocidade
+        self.speedScore2 = 30 #ponto que aumenta a velocidade
+        self.lbl_speed["text"] = "Speed: Normal"
+        self.lbl_mode["text"] = "Mode: Medium"
+        self.walls = False
+        self.lbl_walls["text"] = "Walls: Off"
+        
+    def gameHard(self):
+        self.v = self.hSpeed #altera o delay no metodo de movimento
+        self.gameMode = "Hard"
+        self.speedScore2 = 20 #ponto que aumenta a velocidade
+        self.lbl_speed["text"] = "Speed: High"
+        self.lbl_mode["text"] = "Mode: Hard"
+        self.walls = True
+        self.lbl_walls["text"] = "Walls: On"
+
+    def gameExpert(self):
+        self.v = self.uSpeed #altera o delay no metodo de movimento
+        self.gameMode = "Expert"
+        self.lbl_speed["text"] = "Speed: Ultra"
+        self.lbl_mode["text"] = "Mode: Expert"
+        self.walls = True
+        self.lbl_walls["text"] = "Walls: On"
+
+    def gameGod(self):
+        self.v = self.lSpeed #altera o delay no metodo de movimento
+        self.gameMode = "God"
+        self.lbl_speed["text"] = "Speed: Light"
+        self.lbl_mode["text"] = "Mode: God"
+        self.walls = True
+        self.lbl_walls["text"] = "Walls: On"
         
     '''Mostra as instrucoes do jogo'''
     def gameInstructions(self):
@@ -198,36 +266,42 @@ class Snake:
         self.msg1.pack(side = TOP, fill = BOTH)
         self.msg2.pack(side = TOP, fill = BOTH)
         self.msg3.pack(side = TOP, fill = BOTH)
-        
-    '''Metodo de movimento da cobra'''
-    def moveSnake(self, event):
+
+    '''Metodo de mudanca da direcao'''
+    def changeDirect(self, event):
         '''Detecta qual tecla foi pressionada'''
         if event.keysym == "Right":
             '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
-            if self.direct != 2 and self.direct!= 1:
+            if self.direct != 2 and self.direct!= 1 and self.move != 0:
                 '''Move a cobra para direita'''        
                 self.direct = 1 #muda a variavel da direcao para direita
-
+                self.move = 0 #muda a variavel da condicao da troca de direcao
+                
         elif event.keysym == "Left":
             '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
-            if self.direct != 1 and self.direct!= 2:
+            if self.direct != 1 and self.direct!= 2 and self.move != 0:
                 '''Move a cobra para esquerda'''
                 self.direct = 2 #muda a variavel da direcao para esquerda
-
+                self.move = 0 #muda a variavel da condicao da troca de direcao
+                
         elif event.keysym == "Down":
             '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
-            if self.direct != 4 and self.direct!= 3:
+            if self.direct != 4 and self.direct!= 3 and self.move != 0:
                 '''Move a cobra para baixo'''        
                 self.direct = 3 #muda a variavel da direcao para baixo
-
+                self.move = 0 #muda a variavel da condicao da troca de direcao
+                
         elif event.keysym == "Up":
             '''Impede que a cobra mude apenas sentido do movimento e que chame o mesmo metodo mais de uma vez'''
-            if self.direct != 3 and self.direct!= 4:
+            if self.direct != 3 and self.direct!= 4 and self.move != 0:
                 '''Move a cobra para cima'''        
                 self.direct = 4 #muda a variavel da direcao para cima
-
+                self.move = 0 #muda a variavel da condicao da troca de direcao
+                
+    '''Metodo de movimento da cobra'''
+    def moveSnake(self):
         '''Faz com que o movimento se repita infinitamente'''
-        while self.direct != 0:
+        while self.game == True:
             if self.direct == 1:
                 '''Move para direita'''
                 if self.xi < self.xmax:       
@@ -241,7 +315,7 @@ class Snake:
                     self.xf += self.dmove
 
                     '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
-                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
                     self.SnakeB.append(self.Sbody)
                     self.SnakeBCoords.append(self.canvas.coords(self.Sbody))
 
@@ -268,7 +342,7 @@ class Snake:
                     self.xf -= self.dmove
 
                     '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
-                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
                     self.SnakeB.append(self.Sbody)
                     self.SnakeBCoords.append(self.canvas.coords(self.Sbody))
 
@@ -295,7 +369,7 @@ class Snake:
                     self.yf += self.dmove
 
                     '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
-                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
                     self.SnakeB.append(self.Sbody)
                     self.SnakeBCoords.append(self.canvas.coords(self.Sbody))
 
@@ -321,7 +395,7 @@ class Snake:
                     self.yf -= self.dmove
 
                     '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
-                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
                     self.SnakeB.append(self.Sbody)
                     self.SnakeBCoords.append(self.canvas.coords(self.Sbody))
                 
@@ -336,10 +410,15 @@ class Snake:
                         
             '''Detecta quando a coordenada da cabeca da cobra se iguala a da comida'''
             if self.canvas.coords(self.SnakeB[-1]) == self.canvas.coords(self.food):
-                    self.canvas.delete(self.food) #apaga a comida
-                    self.snakeGrow() #chama o metodo de crescimento da cobra
-                    self.reFood() #chama o metodo para criar outra comida
+                self.Scolor = self.Fcolor #muda a cor da cobra para a cor da comida
+                self.canvas.delete(self.food) #apaga a comida
+                self.snakeGrow() #chama o metodo de crescimento da cobra
+                self.reFood() #chama o metodo para criar outra comida
 
+            else:
+                '''Deixa a cobra da cor original novamente'''
+                self.Scolor = "green"
+                    
             if len(self.SnakeB) >= 3:
                 self.count = 0
                 for i in range(0, len(self.SnakeBCoords)-2):
@@ -348,19 +427,21 @@ class Snake:
                         self.count += 1
                         if self.count != 0:
                             self.hitSnake() #chama um metodo que acaba o jogo
-                  
+
+            self.move = 1
             self.canvas.update() #atualiza o canvas para o movimento continuar
             time.sleep(self.v) #cria um delay para ajustar a velocidade da cobra
-    
+
     '''Acaba o jogo'''
     def hitWall(self):
-        self.direct = 0
+        self.game = False
         showerror("Game Over", "Snake hit a wall")
         self.frame.focus_set()
         self.restartWindow()
-
+    
     '''Acaba o jogo'''
     def hitSnake(self):
+        self.game = False
         self.direct = 0
         showerror("Game Over", "Snake hit itself")
         self.frame.focus_set()
@@ -374,13 +455,15 @@ class Snake:
         self.top_restart.title("Game Over")
 
         '''Cria os labels e buttons para a janela'''
-        self.lbl_gameover = Label(self.top_restart, bg = self.topbg, font = ("Calibri", 10), text = "Do you want to play again?")
-        self.lbl_gameover.pack(side = TOP, fill = BOTH)
-        self.lbl_blank = Label(self.top_restart, bg = self.topbg, width = 6)
-        self.lbl_blank.pack(side = LEFT)
-        self.btn_restart = Button(self.top_restart, bg = self.topbg, font = ("Calibri", 10), text = "Yes", command = self.gameRestart)
+        self.lbl_gameover = Label(self.top_restart, bg = self.topbg, font = ("Calibri", 12), text = "Do you want to play again?")
+        self.lbl_gameover.pack(side = TOP, fill = BOTH, expand = 1)
+        self.lbl1_blank = Label(self.top_restart, bg = self.topbg, height = 3)
+        self.lbl1_blank.pack(side = LEFT)
+        self.lbl2_blank = Label(self.top_restart, bg = self.topbg, width = 5)
+        self.lbl2_blank.pack(side = LEFT)
+        self.btn_restart = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "Yes", command = self.gameRestart)
         self.btn_restart.pack(side = LEFT)
-        self.btn_exit = Button(self.top_restart, bg = self.topbg, font = ("Calibri", 10), text = "No", command = self.gameExit)
+        self.btn_exit = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "No", command = self.gameExit)
         self.btn_exit.pack(side = LEFT)
 
         '''Muda a variavel da janela de restart para que ela seja destruida'''
@@ -406,27 +489,36 @@ class Snake:
     '''Aumenta a cobra'''
     def snakeGrow(self):
         '''Cria um quadrado para adicionar no corpo da cobra'''
-        self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor)
+        self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = self.Scolor, outline = self.borderScolor)
         self.SnakeB.insert(0, self.Sbodyplus) #insere o quadrado a lista do corpo da cobra
         self.SnakeBCoords.append(self.canvas.coords(self.Sbodyplus)) #adiciona as coordenadas do quadrado a lista de coordenadas do corpo da cobra
-
         '''Aumenta a pontuacao'''
         self.score += 1
         self.lbl_score["text"] += 1
-
         '''Quando a pontuacao chegar a um certo numero, a velocidade aumenta'''
-        if self.score == self.speedScore1:
-            if self.v == self.sSpeed:
-                self.mediumSpeed() #chama o metodo com a velocidade intermediaria
-                
-        elif self.score == self.speedScore2:
-            if self.v == self.mSpeed:
-                self.highSpeed() #chama o metodo com a velocidade rapida
-                
-        elif self.score == self.speedScore3:
-            if self.v == self.hSpeed:
-                self.ultraSpeed() #chama o metodo com a maior velocidade
-
+        if self.gameMode == "Medium":                    
+            if self.score == self.speedScore1:
+                if self.v == self.nSpeed:
+                    self.highSpeed() #chama o metodo com a velocidade rapida
+                    
+            elif self.score == self.speedScore2:
+                if self.v == self.hSpeed:
+                    self.ultraSpeed() #chama o metodo com a maior velocidade
+                    
+        elif self.gameMode == "Hard":
+            if self.score == self.speedScore2:
+                if self.v == self.hSpeed:
+                    self.ultraSpeed() #chama o metodo com a maior velocidade
+     
+        if self.Fcolor == self.Fcolors[self.i]:
+            '''Define a lista de cores como o limite de mudanca'''
+            if self.i < (len(self.Fcolors)-1):
+                self.i += 1
+            else:
+                self.i = 0
+            '''Muda a cor da comida'''
+            self.Fcolor = self.Fcolors[self.i]
+            
 root = Tk()
 Snake(root)
 root.mainloop()
