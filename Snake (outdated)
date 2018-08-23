@@ -1,6 +1,6 @@
 from Tkinter import*
 import time
-from random import shuffle
+from random import randint, shuffle
 
 class Snake:
     def __init__(self, master = None):
@@ -10,255 +10,287 @@ class Snake:
         self.frame["bg"] = "black"
         self.frame.pack()
         
-        '''Coordenadas do corpo'''
-        self.xi = 2
-        self.yi = 2
-        self.xf = 20
-        self.yf = 20
-        self.xdif = 19
-        self.ydif = 19
-
-        '''Extremos do Canvas'''
-        self.xmin = 2
-        self.ymin = 2
-        self.xmax = 382
-        self.ymax = 287
-
         '''Listas de posicoes possiveis da comida'''
         self.Lx = [2, 21, 40, 59, 78, 97, 116, 135, 154, 173, 192, 211, 230, 249, 268, 287, 306, 325, 344, 363, 382]
         self.Ly = [2, 21, 40, 59, 78, 97, 116, 135, 154, 173, 192, 211, 230, 249, 268, 287]
         
         '''Distancia de movimento'''
         self.dmove = 19
+        
+        '''Coordenadas do corpo'''
+        self.coordx = randint(4, 16)
+        self.coordy = randint(4, 10)
+        self.xi = self.Lx[self.coordx]
+        self.yi = self.Ly[self.coordy]
+        self.xf = self.xi + self.dmove
+        self.yf = self.yi + self.dmove
+        
+        '''Extremos do Canvas'''
+        self.xmin = 2
+        self.ymin = 2
+        self.xmax = 400
+        self.ymax = 305
 
+##        self.xmin = 2
+##        self.ymin = 2
+##        self.xmax = 382
+##        self.ymax = 287
+        
+        '''Velocidade do movimento'''
+        self.v = 0.1
+        
         '''Direcao de movimento'''
-        self.direct = 0
+        self.direct = 0 #0 - nula, 1 - direita, 2 - esquerda, 3 - para baixo, 4 - para cima
         
         '''Variavel apontando se a cobra comeu a comida'''
-        self.ateF = 0
+        self.fdif = 0
         
         '''Cria o Canvas e cofingura-o'''
         self.canvas = Canvas(self.frame)
-        self.canvas["width"] = 399
-        self.canvas["height"] = 304
+##        self.canvas["width"] = 400
+##        self.canvas["height"] = 305
+
+        self.canvas["width"] = 419
+        self.canvas["height"] = 324
+        
 ##        self.canvas["bg"] = "black"
         self.canvas.pack(side = TOP)
 
         '''Lista com o corpo da cobra'''
-        '''Cria o corpo da cobra'''
         self.SnakeB = []
+
+        '''Cria o corpo da cobra'''
         self.Sbody1 = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
-        self.Sbody2 = self.canvas.create_rectangle(self.xi+self.xdif, self.yi, self.xf+self.xdif, self.yf, fill = "darkgreen")
-        self.Sbody3 = self.canvas.create_rectangle(self.xi+2*self.xdif, self.yi, self.xf+2*self.xdif, self.yf, fill = "darkgreen")
-##        self.Sbody4 = self.canvas.create_rectangle(self.xi+3*self.xdif, self.yi, self.xf+3*self.xdif, self.yf, fill = "darkgreen")
 
         '''Adiciona os quadrados(partes do corpo) a lista(corpo)'''
         self.SnakeB.append(self.Sbody1)
-        self.SnakeB.append(self.Sbody2)
-        self.SnakeB.append(self.Sbody3)
-##        self.SnakeB.append(self.Sbody4)
 
-        '''Associa os movimentos da cobra aos botoes do teclado'''
-        self.canvas.bind("<Up>", self.moveSnakeYUE)
-        self.canvas.bind("<Down>", self.moveSnakeYDE)
-        self.canvas.bind("<Right>", self.moveSnakeXRE)
-        self.canvas.bind("<Left>", self.moveSnakeXLE)
+        '''Associa os movimentos da cobra as teclas'''
+        self.canvas.bind("<Right>", self.directR)
+        self.canvas.bind("<Left>", self.directL)
+        self.canvas.bind("<Down>", self.directD)
+        self.canvas.bind("<Up>", self.directU)
         self.canvas.focus_set()
 
-        self.mtp = 1
-        self.mtpA = 4
-        self.mtpB = (len(self.SnakeB)-1)
-        self.mtpC = -1
-        
+        '''Chama o metodo de criacao da comida'''
         self.food()
-##        print "(", int(self.xi), ",", int(self.yi), ",", self.xf, ",", self.yf, ")"
-##        print "(", int(self.x1), ",", int(self.y1), ")"
+
+        '''Define os multiplicadores de coordenadas'''
+        self.mtpY = (len(self.SnakeB)-1) #para usar quando a cobra for comer a comida na vertical
+
+    def directR(self, event):
+        '''Impede que a cobra mude apenas sentido do movimento'''
+        if self.direct != 2:
+            '''Move a cobra para direita'''        
+            self.direct = 1 #muda a variavel da direcao para direita
+            self.moveSnake() #chama o metodo de movimento da cobra
+
+    def directL(self, event):
+        '''Impede que a cobra mude apenas sentido do movimento'''
+        if self.direct != 1:
+            '''Move a cobra para esquerda'''
+            self.direct = 2 #muda a variavel da direcao para esquerda
+            self.moveSnake() #chama o metodo de movimento da cobra
         
-    '''Move a cobra para direita'''
-    def moveSnakeXRE(self, event):
-        self.direct = 0
-        while self.direct == 0:
-            if self.xi + (len(self.SnakeB)-1)*self.xdif < self.xmax:
-                '''Deleta o ultimo quadrado(parte de tras da cobra) do canvas'''
-                self.canvas.delete(self.SnakeB[0])
+    def directD(self, event):
+        '''Impede que a cobra mude apenas sentido do movimento'''
+        if self.direct != 4:
+            '''Move a cobra para baixo'''        
+            self.direct = 3 #muda a variavel da direcao para baixo
+            self.moveSnake() #chama o metodo de movimento da cobra
+        
+    
+    def directU(self, event):
+        '''Impede que a cobra mude apenas sentido do movimento'''
+        if self.direct != 3:
+            '''Move a cobra para cima'''        
+            self.direct = 4 #muda a variavel da direcao para cima
+            self.moveSnake() #chama o metodo de movimento da cobra
+        
+    '''Metodo de movimento da cobra'''
+    def moveSnake(self):
+        while True:
+            if self.direct == 1:
+                '''Move para direita'''
+                if self.xi < self.xmax:       
+                    '''Apaga o quadrado final da cobra do canvas e remove da lista (corpo)'''
+                    self.canvas.delete(self.SnakeB[0])
+                    self.SnakeB.remove(self.SnakeB[0])
 
-                '''Remove o ultimo quadrado(parte de tras da cobra) da lista(corpo da cobra)'''
-                self.SnakeB.remove(self.SnakeB[0]) 
-
-                if self.ateF == 1:
+                    '''Muda as variaveis das coordenadas no eixo X'''
                     self.xi += self.dmove
                     self.xf += self.dmove
-                    self.Sbodyplus = self.canvas.create_rectangle(self.xi+(len(self.SnakeB)-1)*self.xdif, self.yi, self.xf+(len(self.SnakeB)-1)*self.xdif, self.yf, fill = "darkgreen")
-                    self.SnakeB.append(self.Sbodyplus)
-    ##                self.ateF = 0
+
+                    '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+                    self.SnakeB.append(self.Sbody)
+
                 else:
-                    self.xi += self.dmove
-                    self.xf += self.dmove
-                    self.Sbodyplus = self.canvas.create_rectangle(self.xi+len(self.SnakeB)*self.xdif, self.yi, self.xf+len(self.SnakeB)*self.xdif, self.yf, fill = "darkgreen")
-                    self.SnakeB.append(self.Sbodyplus)
-
-                '''Chama o metodo que aumenta o corpo da cobra'''
-                if self.xi+(self.mtpB*self.xdif) == self.x1 and self.yi == self.y1:
-                    self.snakeGrow()
-                    self.reFood()
-            else:
-                self.direct = 4
-                self.canvas.destroy()
-                self.hitWall()
-            print "(", int(self.xi+(self.mtpB*self.xdif)), ",", int(self.yi), ",", self.xf+(self.mtpB*self.xdif), ",", self.yf, ")"
-            print "(", int(self.x1), ",", int(self.y1), ")"
-            self.canvas.update()
-            time.sleep(0.1)
-
-        
-    '''Move a cobra para esquerda'''
-    def moveSnakeXLE(self, event):
-        self.direct = 1
-        while self.direct == 1:
-            if self.xi + (len(self.SnakeB)-1)*self.xdif > self.xmin:
-                self.canvas.delete(self.SnakeB[0])
-                self.SnakeB.remove(self.SnakeB[0])
-
-                if self.ateF == 1:
-                    self.xi -= self.dmove
-                    self.xf -= self.dmove
-                    self.Sbodyplus = self.canvas.create_rectangle(self.xi+(len(self.SnakeB)-1)*self.xdif, self.yi, self.xf+(len(self.SnakeB)-1)*self.xdif, self.yf, fill = "darkgreen")
-                    self.SnakeB.append(self.Sbodyplus)
+                    self.xi = -17
+                    self.xf = self.xi+self.dmove
                     
-                else:
+            if self.direct == 2:       
+                '''Move para esquerda'''        
+                if self.xi > self.xmin:
+                    '''Apaga o quadrado final da cobra do canvas e remove da lista (corpo)'''
+                    self.canvas.delete(self.SnakeB[0])
+                    self.SnakeB.remove(self.SnakeB[0])
+                    
+                    '''Muda as variaveis das coordenadas no eixo X'''
                     self.xi -= self.dmove
                     self.xf -= self.dmove
-                    self.Sbodyplus = self.canvas.create_rectangle(self.xi+len(self.SnakeB)*self.xdif, self.yi, self.xf+len(self.SnakeB)*self.xdif, self.yf, fill = "darkgreen")
-                    self.SnakeB.append(self.Sbodyplus)
 
-                '''Chama o metodo que aumenta o corpo da cobra'''
-                if self.xi+(self.mtpB*self.xdif) == self.x1 and self.yi == self.y1:
+                    '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+                    self.SnakeB.append(self.Sbody)
+
+                else:
+                    self.xi = 420
+                    self.xf = self.xi+self.dmove
+                    
+            if self.direct == 3:
+                '''Move para baixo'''
+                if self.yi < self.ymax:
+                    '''Apaga o quadrado final da cobra do canvas e remove da lista (corpo)'''
+                    self.canvas.delete(self.SnakeB[0])
+                    self.SnakeB.remove(self.SnakeB[0])
+
+                    '''Muda as variaveis das coordenadas no eixo Y'''
+                    self.yi += self.dmove
+                    self.yf += self.dmove
+
+                    '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+                    self.SnakeB.append(self.Sbody)
+
+                else:
+                    self.yi = -17
+                    self.yf = self.yi+self.dmove
+                    
+            if self.direct == 4:
+                '''Move para cima'''
+                if self.yi > self.ymin:
+                    '''Apaga o quadrado final da cobra do canvas e remove da lista (corpo)'''
+                    self.canvas.delete(self.SnakeB[0])
+                    self.SnakeB.remove(self.SnakeB[0])
+
+                    '''Muda as variaveis das coordenadas no eixo Y'''
+                    self.yi -= self.dmove
+                    self.yf -= self.dmove
+
+                    '''Cria um novo quadrado no canvas no sentido do movimento e adiciona-o a lista(corpo)'''
+                    self.Sbody = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+                    self.SnakeB.append(self.Sbody)
+
+                else:
+                    self.yi = 325
+                    self.yf = self.yi+self.dmove
+                    
+            if self.canvas.coords(self.SnakeB[-1]) == self.canvas.coords(self.food):
+                    self.canvas.delete(self.food)
                     self.snakeGrow()
                     self.reFood()
-            else:
-                self.direct = 4
-                self.canvas.destroy()
-                self.hitWall()
-            print "(", int(self.xi), ",", int(self.yi), ",", self.xf, ",", self.yf, ")"
-            print "(", int(self.x1), ",", int(self.y1), ")"
-            self.canvas.update()
-            time.sleep(0.1)
-
-    '''Move a cobra para baixo'''
-    def moveSnakeYDE(self, event):
-        self.direct = 2
-        while self.direct == 2:
-            if self.yi < self.ymax:
-                self.canvas.delete(self.SnakeB[0])
-                self.SnakeB.remove(self.SnakeB[0])
-                self.yi += self.dmove
-                self.yf += self.dmove
-                self.Sbodyplus = self.canvas.create_rectangle(self.xi+len(self.SnakeB)*self.xdif, self.yi-3+self.ydif/5, self.xf+len(self.SnakeB)*self.xdif, self.yf-3+self.ydif/5, fill = "darkgreen")
-                self.SnakeB.append(self.Sbodyplus)
-
-                '''Chama o metodo que aumenta o corpo da cobra'''
-                if self.xi+(self.mtpB*self.xdif) == self.x1 and self.yi == self.y1:
-                    self.snakeGrow()
-                    self.reFood
-            else:
-                self.direct = 4
-                self.canvas.destroy()
-                self.hitWall()
-            print "(", int(self.xi), ",", int(self.yi), ",", self.xf, ",", self.yf, ")"
-            print "(", int(self.x1), ",", int(self.y1), ")"
-            self.canvas.update()
-            time.sleep(0.1)
-
-    '''Move a cobra para cima'''
-    def moveSnakeYUE(self, event):
-        self.direct = 3
-        while self.direct == 3:
-            if self.yi > self.ymin:            
-                self.canvas.delete(self.SnakeB[0])
-                self.SnakeB.remove(self.SnakeB[0])
-                self.yi -= self.dmove
-                self.yf -= self.dmove
-                self.Sbodyplus = self.canvas.create_rectangle(self.xi+len(self.SnakeB)*self.xdif, self.yi-3+self.ydif/5, self.xf+len(self.SnakeB)*self.xdif, self.yf-3+self.ydif/5, fill = "darkgreen")
-                self.SnakeB.append(self.Sbodyplus)
-
-                '''Chama o metodo que aumenta o corpo da cobra'''
-                if self.xi+(self.mtpB*self.xdif) == self.x1 and self.yi == self.y1:
-                    self.snakeGrow()
-                    self.reFood()
-            else:
-                self.direct = 4
-                self.canvas.destroy()
-                self.hitWall()
-            print "(", int(self.xi), ",", int(self.yi), ",", self.xf, ",", self.yf, ")"
-            print "(", int(self.x1), ",", int(self.y1), ")"
-            self.canvas.update()
-            time.sleep(0.1)
-
+                    
+            self.canvas.update() #atualiza o canvas para o movimento continuar
+            time.sleep(self.v) #cria um delay para ajustar a velocidade da cobra
+    
+    '''Mostra a mensagem "GAME OVER"'''
     def hitWall(self):
-        self.lbl = Label(self.frame, text = "GAME OVER", font = ("Calibri", 40, "bold"), fg = "white", bg = "black")
+        self.lbl = Label(self.frame, text = "GAME OVER", font = ("Calibri", 50, "italic", "bold"), fg = "white")
         self.lbl.pack()
 
+    def hitSnake(self):
+        self.canvas.delete(ALL)
+        self.lbl = Label(self.frame, text = "GAME OVER", font = ("Calibri", 50, "italic", "bold"), fg = "white")
+        self.lbl.pack()
+    
     def food(self):
-        '''Embaralha a lista com as possiveis coordenadas da comida'''
-        shuffle(self.Lx)
-        shuffle(self.Ly)
+        '''Cria uma lista para coordenadas que a comida nao pode ter'''
+        self.NotCoords = []
+        self.food = 0
 
-        '''Atribui as coordenadas a comida e cria a comida'''
-        self.x1 = self.Lx[0]
-        self.y1 = self.Ly[0]
-        self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+18, self.y1+18, fill = "yellow")
+        '''Adiciona as coordenadas a lista'''
+        for i in range(0, len(self.SnakeB)-1):
+            self.NotCoords.append(self.canvas.coords(self.SnakeB[i]))
+
+        while self.food == 0:
+            '''Embaralha a lista com as possiveis coordenadas da comida'''
+            shuffle(self.Lx)
+            shuffle(self.Ly)
+
+            '''Atribui as coordenadas a comida'''
+            self.x1 = self.Lx[0]
+            self.y1 = self.Ly[0]
+            if (self.x1, self.y1, self.x1+self.dmove, self.y1+self.dmove) not in self.NotCoords:
+                '''Cria a comida'''                
+                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dmove, self.y1+self.dmove, fill = "yellow")
 
     def reFood(self):
-        '''Embaralha a lista com as possiveis coordenadas da comida'''
-        shuffle(self.Lx)
-        shuffle(self.Ly)
+        '''Cria uma lista para coordenadas que a comida nao pode ter'''
+        self.NotCoords = []
+        self.food = 0
 
-        '''Atribui as coordenadas a comida e cria a comida'''
-        self.x1 = self.Lx[0]
-        self.y1 = self.Ly[0]
-        self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+18, self.y1+18, fill = "yellow")
+        '''Adiciona as coordenadas a lista'''
+        for i in range(0, len(self.SnakeB)-1):
+            self.NotCoords.append(self.canvas.coords(self.SnakeB[i]))
 
-    '''Aumenta o corpo da cobra'''
+        while self.food == 0:
+            '''Embaralha a lista com as possiveis coordenadas da comida'''
+            shuffle(self.Lx)
+            shuffle(self.Ly)
+
+            '''Atribui as coordenadas a comida'''
+            self.x1 = self.Lx[0]
+            self.y1 = self.Ly[0]
+            if (float(self.x1), float(self.y1), float(self.x1+self.dmove), float(self.y1+self.dmove)) not in self.NotCoords:
+                '''Cria a comida'''                
+                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dmove, self.y1+self.dmove, fill = "yellow")
+
+    '''Aumenta a cobra'''
     def snakeGrow(self):
-        if self.xi-(self.mtpA*self.xdif) < self.xi-(self.mtpC*self.xdif):
-            '''Define o multiplicador de coordenadas do corpo'''
-##            self.mtp = len(self.SnakeB)
+        if self.direct == 1:
+            self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+            self.SnakeB.insert(0, self.Sbodyplus)
 
-            '''Cria mais um quadrado(parte do corpo) e adiciona na lista(corpo)'''
-            self.SbodyZ = self.canvas.create_rectangle(self.xi+(self.mtpA*self.xdif), self.yi, self.xf+(self.mtpA*self.xdif), self.yf, fill = "darkgreen")
-            self.canvas.delete(self.food)
-            self.SnakeB.insert(1, self.SbodyZ)
-                
-        elif self.xi-(self.mtpA*self.xdif) > self.xi-(self.mtpC*self.xdif):
-##            '''Cria mais um quadrado(parte do corpo) e adiciona na lista(corpo)'''
-##            self.SbodyZ = self.canvas.create_rectangle(self.xi+self.mtpA*self.xdif, self.yi, self.xf+self.mtpA*self.xdif, self.yf, fill = "darkgreen")
-##            self.canvas.delete(self.food)
-##            self.SnakeB.insert(0, self.SbodyZ)
-            '''Cria mais um quadrado(parte do corpo) e adiciona na lista(corpo)'''
-            self.SbodyZ = self.canvas.create_rectangle(self.xi, self.yi+self.mtpA*self.ydif, self.xf, self.yf+self.mtpA*self.ydif, fill = "darkgreen")
-            self.canvas.delete(self.food)
-            self.SnakeB.insert(0, self.SbodyZ)
-##        else:
-##            if self.yi-(self.mtpA*self.ydif) < self.yi-(self.mtpC*self.ydif):
-##                '''Cria mais um quadrado(parte do corpo) e adiciona na lista(corpo)'''
-##                self.SbodyZ = self.canvas.create_rectangle(self.xi, self.yi+self.mtpC*self.ydif, self.xf, self.yf+self.mtpC*self.ydif, fill = "darkgreen")
-##                self.canvas.delete(self.food)
-##                self.SnakeB.insert(0, self.SbodyZ)
-##
-##            else:
-##                '''Cria mais um quadrado(parte do corpo) e adiciona na lista(corpo)'''
-##                self.SbodyZ = self.canvas.create_rectangle(self.xi, self.yi-self.mtpA*self.ydif, self.xf, self.yf-self.mtpA*self.ydif, fill = "darkgreen")
-##                self.canvas.delete(self.food)
-##                self.SnakeB.insert(0, self.SbodyZ)
+        elif self.direct == 2:
+            self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+            self.SnakeB.insert(0, self.Sbodyplus)
 
-        self.mtp += 1
-        self.mtpA += 1
-        self.mtpB += 1
-        self.mtpC += 1
-        
-        '''Chama o metodo da comida'''
-        self.food
-        
+        elif self.direct == 3:
+            self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+            self.SnakeB.insert(0, self.Sbodyplus)
+
+        elif self.direct == 4:
+            self.Sbodyplus = self.canvas.create_rectangle(self.xi, self.yi, self.xf, self.yf, fill = "darkgreen")
+            self.SnakeB.insert(0, self.Sbodyplus)
+
+    def slowSpeed(self):
+        self.v = 0.3
+
+    def mediumSpeed(self):
+        self.v = 0.2
+
+    def highSpeed(self):
+        self.v = 0.1
+
 root = Tk()
+
+'''Define o menu principal'''
+mainmenu = Menu(root)
+
+'''Define os menus secundarios'''
+submenu1 = Menu(mainmenu)
+mainmenu.add_cascade(label = "Options", menu = submenu1)
+submenu2 = Menu(mainmenu)
+mainmenu.add_cascade(label = "Speed", menu = submenu2)
+
+'''Adiciona comandos aos menus secundarios'''
+submenu1.add_command(label = 'Restart', command = Snake)
+submenu1.add_command(label = 'Stop')
+submenu2.add_command(label = 'Slow', command = Snake.slowSpeed)
+submenu2.add_command(label = 'Medium', command = Snake.mediumSpeed)
+submenu2.add_command(label = 'High', command = Snake.highSpeed)
+
 Snake(root)
+root.config(menu = mainmenu)
 root.mainloop()
