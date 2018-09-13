@@ -32,6 +32,7 @@ class Snake:
         self.Sheadcolor = "#175A07" #cor da cabeca da cobra "dark green"
         self.Scolor = "#00FF00" #cor da cobra "black"
         self.borderScolor = "#000000" #cor do contorno da cobra "black"
+        self.borderFcolor = "#000000" #cor do contorno da comida "black"
         self.Fcolor = self.Fcolors[self.i] #cores da comida 
         self.vFcolor = "#FF0000" #cor da vitamina "red"
         self.BGcolor = "#000000" #cor de fundo 
@@ -580,7 +581,7 @@ class Snake:
             
             if [float(self.x1), float(self.y1), float(self.x1+self.dif), float(self.y1+self.dif)] not in self.SnakeBCoords:
                 '''Cria a comida'''                
-                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor, outline = self.borderScolor)
+                self.food = self.canvas.create_oval(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor, outline = self.borderFcolor)
                 self.foodCoords.append(self.canvas.coords(self.food))
 
     '''Aumenta a cobra'''
