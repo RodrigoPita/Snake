@@ -88,11 +88,9 @@ class Snake:
             with open('highScore.txt', 'r+') as self.highScore:
                 if self.highScore.read() >= "0":
                     pass
-                else:
-                    self.highScore.write("0")
         else:
             with open('highScore.txt', 'w') as self.highScore:
-                self.highScore.write("0")
+                self.highScore.write("107") #recorde "hard coded" para nao precisar baixar documento de texto
         #############################################################
         '''-------------------- L A B E L S ----------------------'''
         '''Cria label para o nome dop jogo'''
