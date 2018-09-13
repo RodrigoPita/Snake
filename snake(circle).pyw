@@ -1,8 +1,15 @@
+#############################################################
+'''--------------- S N A K E - G A M E -------------------'''
+#############################################################
+'''---------- B Y - R O D R I G O - P I T A --------------'''
+#############################################################
+
 from Tkinter import*
 from tkMessageBox import*
 import time
 from random import randint, shuffle
 import sys
+import os
 
 '''Aumenta o limite de recursao'''
 sys.setrecursionlimit(1000000)
@@ -16,27 +23,28 @@ class Snake:
         #############################################################
         '''--------------------- C O R E S -----------------------'''
         '''Lista com as cores da comida'''
-        self.Fcolors = ["yellow", "magenta2", "blue", "red"]
+        self.Fcolors = ["#FFFF00", "#FF00FF", "#0000FF", "#FF0000"] # ["yellow", "magenta2", "blue", "red"]
 
         '''Variavel para mudar a cor da lista'''
         self.i = randint(0, (len(self.Fcolors)-1))
         
         '''Snake Classic'''
-        self.Sheadcolor = "dark green" #cor da cabeca da cobra "dark green"
-        self.Scolor = "green" #cor da cobra "green"
-        self.borderScolor = "green" #cor do contorno da cobra "green"
+        self.Sheadcolor = "#175A07" #cor da cabeca da cobra "dark green"
+        self.Scolor = "#00FF00" #cor da cobra "green"
+        self.borderScolor = "#00FF00" #cor do contorno da cobra "green"
+        self.borderFcolor = "#000000" #cor do contorno da comida "black"
         self.Fcolor = self.Fcolors[self.i] #cores da comida 
-        self.vFcolor = "red" #cor da vitamina "red"
-        self.BGcolor = "black" #cor de fundo 
-        self.lbl1color = "dark green" #cor de fundo do label do nome do jogo "dark green"
-        self.lbl2color = "pale green" #cor de fundo dos labels "pale green"
-        self.Titlefontcolor = "green" #cor do titulo "green"
-        self.fontcolor = "dark green" #cor do texto "dark green"
-        self.topbg = "seashell2" #cor das janelas extra "seashell2"
+        self.vFcolor = "#FF0000" #cor da vitamina "red"
+        self.BGcolor = "#000000" #cor de fundo 
+        self.lbl1color = "#175A07" #cor de fundo do label do nome do jogo "dark green"
+        self.lbl2color = "#AAF9A3" #cor de fundo dos labels "pale green"
+        self.Titlefontcolor = "#00FF00" #cor do titulo "green"
+        self.fontcolor = "#175A07" #cor do texto "dark green"
+        self.topbg = "#E0E0D6" #cor das janelas extra "seashell2"
 
         '''Define a cor do master'''
         self.master = master
-        self.master["bg"] = "midnight blue" #"midnight blue"
+        self.master["bg"] = "#041C65" #"midnight blue"
         '''-------------------------------------------------------'''
         #############################################################
         
@@ -44,13 +52,13 @@ class Snake:
         '''-------------------- C A N V A S ----------------------'''
         '''Cria o frame para o canvas'''
         self.frame = Frame(master, borderwidth = 10, relief = "ridge")
-        self.frame["bg"] = "black"
+        self.frame["bg"] = "#000000"
         self.frame.pack()
         
         '''Variaveis para determinar o tamanho do canvas'''
-        self.cRow = 50 #linhas
-        self.cCol = 60 #colunas
-        self.cMtp = 10 #multiplicador para o espaco entre linhas ou colunas
+        self.cRow = 50 #linhas 50
+        self.cCol = 60 #colunas 60
+        self.cMtp = 10 #multiplicador para o espaco entre linhas ou colunas 10
         self.cWidth = self.cCol * self.cMtp + 1 #largura do canvas
         self.cHeight = self.cRow * self.cMtp + 1 #altura do canvas
 
@@ -83,11 +91,13 @@ class Snake:
         '''Pontos'''
         self.score = 0
         
-        with open('highScore.txt', 'r+') as self.highScore:
-            if self.highScore.read() >= "0":
-                pass
-            else:
-                self.highScore.write("0")
+        if os.path.exists('highScore.txt'):
+            with open('highScore.txt', 'r+') as self.highScore:
+                if self.highScore.read() >= "0":
+                    pass
+        else:
+            with open('highScore.txt', 'w') as self.highScore:
+                self.highScore.write("107") #recorde "hard coded" para nao precisar baixar documento de texto
         #############################################################
         '''-------------------- L A B E L S ----------------------'''
         '''Cria label para o nome dop jogo'''
@@ -110,7 +120,7 @@ class Snake:
 
         self.highscoreboard = Label(self.frame, borderwidth = 1, relief = "solid", text = " Highscore ", font = ("Calibri", 15, "italic", "bold"), bg = self.lbl2color, fg = self.fontcolor)
         self.highscoreboard.pack(side = TOP, fill = BOTH)
-        
+
         with open('highScore.txt', 'r') as self.highScore:
             self.high_score = self.highScore.read()
 
@@ -222,7 +232,7 @@ class Snake:
         self.submenu2.add_command(label = 'God', command = self.gameGod)
         
         self.submenu3.add_command(label = 'Instructions', command = self.gameInstructions)
-
+        
         self.submenu4.add_command(label = 'Author', command = self.gameAuthor)
         
         master.config(menu = self.mainmenu)
@@ -260,7 +270,7 @@ class Snake:
 
     '''Pausa o jogo'''
     def gameStop(self):
-        self.direct = 0 
+        self.di  = 0 
 
     '''Fecha a janela'''
     def gameExit(self):
@@ -332,6 +342,7 @@ class Snake:
         self.msg1 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "Use the arrow keys to change directions")
         self.msg2 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "If it shows'Walls: On',\n the snake will die by hitting them,\n in order to change the walls dynamics,\n click on 'Options', then on 'Walls'")
         self.msg3 = Label(self.top, bg = self.topbg, font = ("Calibri", 10), text = "If you want, you can also change the snake's speed\n by clicking on 'Speed' and choosing a different one")
+
         self.msg1.pack(side = TOP, fill = BOTH)
         self.msg2.pack(side = TOP, fill = BOTH)
         self.msg3.pack(side = TOP, fill = BOTH)
@@ -348,11 +359,12 @@ class Snake:
     
     '''Acaba o jogo'''
     def endGame(self):
-        with open('highScore.txt', 'r') as self.highScore:
-            score = self.highScore.readline()
-            if int(self.score) > int(score):
-                with open('highScore.txt', 'w') as self.highScore:
-                    self.highScore.write(str(self.score))
+        if self.gameMode == "Hard" or self.gameMode == "Expert":
+            with open('highScore.txt', 'r') as self.highScore:
+                score = self.highScore.readline()
+                if int(self.score) > int(score):
+                    with open('highScore.txt', 'w') as self.highScore:
+                        self.highScore.write(str(self.score))
         self.game = False
         self.direct = 0
         if self.snakeHit == 1:
@@ -372,12 +384,16 @@ class Snake:
         '''Cria os labels e buttons para a janela'''
         self.lbl_gameover = Label(self.top_restart, bg = self.topbg, font = ("Calibri", 12), text = "Do you want to play again?")
         self.lbl_gameover.pack(side = TOP, fill = BOTH, expand = 1)
+        
         self.lbl1_blank = Label(self.top_restart, bg = self.topbg, height = 3)
         self.lbl1_blank.pack(side = LEFT)
+        
         self.lbl2_blank = Label(self.top_restart, bg = self.topbg, width = 5)
         self.lbl2_blank.pack(side = LEFT)
+        
         self.btn_restart = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "Yes", command = self.gameRestart)
         self.btn_restart.pack(side = LEFT)
+        
         self.btn_exit = Button(self.top_restart, width = 5, bg = self.topbg, font = ("Calibri", 10), text = "No", command = self.gameExit)
         self.btn_exit.pack(side = LEFT)
 
@@ -565,7 +581,7 @@ class Snake:
             
             if [float(self.x1), float(self.y1), float(self.x1+self.dif), float(self.y1+self.dif)] not in self.SnakeBCoords:
                 '''Cria a comida'''                
-                self.food = self.canvas.create_rectangle(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor)
+                self.food = self.canvas.create_rectangle(self.x1, self.y1, self.x1+self.dif, self.y1+self.dif, fill = self.Fcolor, outline = self.borderFcolor)
                 self.foodCoords.append(self.canvas.coords(self.food))
 
     '''Aumenta a cobra'''
@@ -578,7 +594,10 @@ class Snake:
         '''Aumenta a pontuacao'''
         self.score += 1
         self.lbl_score["text"] += 1
-             
+
+        if self.score >= self.high_score:
+            self.high_score = self.score
+     
         if self.Fcolor == self.Fcolors[self.i]:
             '''Define a lista de cores como limite de mudanca entre as cores da comida'''
             if self.i < (len(self.Fcolors)-1):
