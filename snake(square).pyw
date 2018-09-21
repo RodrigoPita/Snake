@@ -97,7 +97,7 @@ class Snake:
                     pass
         else:
             with open('highScore.txt', 'w') as self.highScore:
-                self.highScore.write("114") #recorde "hard coded" para nao precisar baixar documento de texto
+                self.highScore.write("128") #recorde (Daniel Albuquerque) "hard coded" para nao precisar baixar documento de texto
         #############################################################
         '''-------------------- L A B E L S ----------------------'''
         '''Cria label para o nome dop jogo'''
