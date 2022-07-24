@@ -1,4 +1,4 @@
-# Snake (Python 2.7)
+# Snake (Python 2.7.13)
 Comp. II em Python (2017.2)
 
 Professor: José Augusto Sapienza Ramos (ja_sapienza@dcc.ufrj.br)
